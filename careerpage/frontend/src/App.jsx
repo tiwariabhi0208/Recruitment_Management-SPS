@@ -10,6 +10,7 @@ import { CandidateDashboard } from "./features/dashboard/CandidateDashboard";
 
 // App shell: owns the cross-cutting auth / apply / dashboard state and wires
 // the public CareerPage together with the modals and candidate dashboard.
+// these are the changes git commit
 export default function App() {
   useKeepAwake();
 
@@ -170,12 +171,12 @@ export default function App() {
           job={
             selectedJob
               ? {
-                  id: selectedJob.id,
-                  title: selectedJob.title,
-                  department: selectedJob.department,
-                  location: selectedJob.location,
-                  type: selectedJob.type,
-                }
+                id: selectedJob.id,
+                title: selectedJob.title,
+                department: selectedJob.department,
+                location: selectedJob.location,
+                type: selectedJob.type,
+              }
               : null
           }
           onClose={() => {
