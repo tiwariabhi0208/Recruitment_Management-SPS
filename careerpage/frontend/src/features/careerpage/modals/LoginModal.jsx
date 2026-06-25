@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Eye, EyeOff, Phone, Lock, X, User, Mail } from "lucide-react";
-import logoImg from "../assets/logo.png";
-import campusImg from "../assets/campus.jpg";
+import logoImg from "../../../assets/logo.png";
+import campusImg from "../../../assets/campus.jpg";
 
 const MAROON = "#72102a";
 const GOLD = "#c9a84c";
