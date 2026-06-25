@@ -28,7 +28,7 @@ import {
   Camera,
   Trash2,
 } from "lucide-react";
-import logoImg from "../assets/logo.png";
+import logoImg from "../../assets/logo.png";
 
 import { toast } from "sonner";
 

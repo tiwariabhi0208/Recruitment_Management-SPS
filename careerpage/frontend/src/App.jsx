@@ -1,256 +1,17 @@
-import { useState, useMemo, useEffect } from "react";
-import { LoginModal } from "./components/LoginModal";
-import { ApplyModal } from "./components/ApplyModal";
-import { CandidateDashboard } from "./components/CandidateDashboard";
-import { motion, AnimatePresence } from "motion/react";
-import JobApplicationModal from "./components/JobApplicationModal";
-import { Toaster, toast } from "sonner";
-import {
-  MapPin,
-  Clock,
-  ChevronRight,
-  Star,
-  Award,
-  Users,
-  BookOpen,
-  Heart,
-  Mail,
-  Phone,
-  GraduationCap,
-  Briefcase,
-  TrendingUp,
-  Shield,
-  Search,
-  MessageSquare,
-  Send,
-} from "lucide-react";
-import logoImg from "./assets/logo.png";
-import campusImg from "./assets/campus.jpg";
+import { useState, useMemo } from "react";
+import { Toaster } from "sonner";
+import { useKeepAwake } from "./lib/keepAwake";
+import { jobs } from "./data/jobs";
+import { CareerPage } from "./features/careerpage/CareerPage";
+import { LoginModal } from "./features/careerpage/modals/LoginModal";
+import { ApplyModal } from "./features/careerpage/modals/ApplyModal";
+import JobApplicationModal from "./features/careerpage/modals/JobApplicationModal";
+import { CandidateDashboard } from "./features/dashboard/CandidateDashboard";
 
-const MAROON = "#72102a";
-const GOLD = "#c9a84c";
-const CREAM = "#faf8f5";
-
-const CATEGORIES = [
-  "All Positions",
-  "Academic Positions",
-  "Administrative Positions",
-  "Operations & Support Positions",
-];
-
-const jobs = [
-  {
-    id: 1,
-    title: "Senior Mathematics Teacher",
-    department: "Academic Department",
-    type: "Full-time",
-    category: "Academic Positions",
-    location: "Guwahati, Assam",
-    deadline: "July 15, 2026",
-    description:
-      "We are looking for an experienced Mathematics teacher to join our secondary school team. The ideal candidate should be passionate about teaching and have a strong command of the subject.",
-    qualifications: [
-      "Master's degree in Mathematics or related field",
-      "B.Ed or equivalent teaching certification",
-      "Experience in CBSE curriculum",
-    ],
-  },
-  {
-    id: 2,
-    title: "English Language & Literature Teacher",
-    department: "Academic Department",
-    type: "Full-time",
-    category: "Academic Positions",
-    location: "Guwahati, Assam",
-    deadline: "July 20, 2026",
-    description:
-      "Teach English literature and language skills to secondary students, foster critical thinking and expressive writing across all levels.",
-    qualifications: [
-      "Degree in English Literature or Linguistics",
-      "B.Ed or equivalent teaching certification",
-      "Strong communication and writing skills",
-    ],
-  },
-  {
-    id: 3,
-    title: "Physics Teacher",
-    department: "Academic Department",
-    type: "Full-time",
-    category: "Academic Positions",
-    location: "Guwahati, Assam",
-    deadline: "July 18, 2026",
-    description:
-      "Deliver engaging physics lessons from foundational to advanced levels, guide students through experiments and STEM competitions.",
-    qualifications: [
-      "M.Sc in Physics or related field",
-      "B.Ed or equivalent teaching certification",
-      "Experience with lab instruction",
-    ],
-  },
-  {
-    id: 4,
-    title: "School Counsellor",
-    department: "Student Welfare",
-    type: "Full-time",
-    category: "Administrative Positions",
-    location: "Guwahati, Assam",
-    deadline: "July 25, 2026",
-    description:
-      "Support students' emotional and academic well-being, coordinate with parents and teachers to nurture a positive school environment.",
-    qualifications: [
-      "Degree in Psychology or Counselling",
-      "Certification in school counselling",
-      "Strong interpersonal and empathy skills",
-    ],
-  },
-  {
-    id: 5,
-    title: "Computer Science Teacher",
-    department: "Academic Department",
-    type: "Full-time",
-    category: "Academic Positions",
-    location: "Guwahati, Assam",
-    deadline: "August 1, 2026",
-    description:
-      "Teach programming, computational thinking, and digital literacy; lead the school's coding clubs and technology initiatives.",
-    qualifications: [
-      "Degree in Computer Science or IT",
-      "B.Ed or equivalent teaching certification",
-      "Proficiency in Python, Java, or web technologies",
-    ],
-  },
-  {
-    id: 6,
-    title: "Physical Education Teacher",
-    department: "Sports & Wellness",
-    type: "Full-time",
-    category: "Academic Positions",
-    location: "Guwahati, Assam",
-    deadline: "August 5, 2026",
-    description:
-      "Develop and implement physical education programs, coach school sports teams, and promote overall student wellness.",
-    qualifications: [
-      "Degree in Physical Education or Sports Science",
-      "Coaching certification preferred",
-      "Experience with school-level sports programs",
-    ],
-  },
-  {
-    id: 7,
-    title: "Academic Coordinator",
-    department: "Administration",
-    type: "Full-time",
-    category: "Administrative Positions",
-    location: "Guwahati, Assam",
-    deadline: "August 10, 2026",
-    description:
-      "Oversee curriculum planning and coordination across departments, liaise between faculty and school leadership to ensure academic quality.",
-    qualifications: [
-      "Postgraduate degree in Education",
-      "Minimum 5 years teaching or admin experience",
-      "Strong organisational and leadership skills",
-    ],
-  },
-  {
-    id: 8,
-    title: "Office Administrator",
-    department: "Administration",
-    type: "Full-time",
-    category: "Administrative Positions",
-    location: "Guwahati, Assam",
-    deadline: "August 12, 2026",
-    description:
-      "Manage day-to-day office operations, maintain school records, coordinate communications between staff, parents, and management.",
-    qualifications: [
-      "Degree in Business Administration or related",
-      "Proficiency in MS Office and school ERP",
-      "Strong written and verbal communication",
-    ],
-  },
-];
-
-const benefits = [
-  {
-    icon: GraduationCap,
-    title: "Continuous Learning",
-    desc: "Funded professional development, workshops, and advanced degree support to keep you at the forefront of education.",
-  },
-  {
-    icon: Heart,
-    title: "Health & Wellness",
-    desc: "Comprehensive medical coverage for you and your family, plus access to our on-campus wellness facilities.",
-  },
-  {
-    icon: Shield,
-    title: "Job Security",
-    desc: "Stable employment in a respected institution with transparent appraisal processes and long-term career pathways.",
-  },
-  {
-    icon: Users,
-    title: "Collaborative Culture",
-    desc: "Work alongside dedicated educators in a supportive environment where ideas are shared and collaboration thrives.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Career Advancement",
-    desc: "Structured growth paths from teacher to department head, academic coordinator, and leadership roles.",
-  },
-  {
-    icon: Award,
-    title: "Recognition & Rewards",
-    desc: "Annual awards celebrating outstanding educators, performance bonuses, and public recognition of achievements.",
-  },
-];
-
-const milestones = [
-  {
-    year: "1960",
-    event:
-      "South Point School founded with a vision to redefine educational excellence in Guwahati, Assam.",
-  },
-  {
-    year: "1975",
-    event:
-      "First batch of students achieves distinction in ICSE board examinations, establishing academic legacy.",
-  },
-  {
-    year: "1990",
-    event:
-      "Expansion of campus and introduction of modern science laboratories and library infrastructure.",
-  },
-  {
-    year: "2005",
-    event:
-      "Recognition as one of the top schools in West Bengal for academic and extracurricular excellence.",
-  },
-  {
-    year: "2015",
-    event:
-      "Launch of digital learning initiatives and integration of technology across all departments.",
-  },
-  {
-    year: "2024",
-    event:
-      "Over 60 years of shaping generations of scholars, leaders, and innovators across disciplines.",
-  },
-];
-
-const stats = [
-  { value: "94%", label: "Employee Satisfaction" },
-  { value: "320+", label: "Staff Members" },
-  { value: "9 Years", label: "Avg. Employee Tenure" },
-  { value: "64+", label: "Years of Excellence" },
-];
-
+// App shell: owns the cross-cutting auth / apply / dashboard state and wires
+// the public CareerPage together with the modals and candidate dashboard.
 export default function App() {
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch("https://career-page-ksip.onrender.com", { method: "HEAD", mode: "no-cors" })
-        .then(() => console.log("Keep-awake ping sent to Render server"))
-        .catch((e) => console.error("Keep-awake ping failed:", e));
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  useKeepAwake();
 
   const [showLogin, setShowLogin] = useState(false);
   const [showApply, setShowApply] = useState(false);
@@ -267,6 +28,12 @@ export default function App() {
   const [applicationDraft, setApplicationDraft] = useState(null);
   const [applicationsData, setApplicationsData] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
+  const [loginTab, setLoginTab] = useState("login");
+
+  const openModal = (tab) => {
+    setLoginTab(tab);
+    setShowLogin(true);
+  };
 
   const handleApplyJob = (job) => {
     if (!loggedInUser) {
@@ -277,48 +44,15 @@ export default function App() {
     setShowJobApplicationModal(true);
   };
 
-  const [loginTab, setLoginTab] = useState("login");
-  const openModal = (tab) => {
-    setLoginTab(tab);
-    setShowLogin(true);
+  const handleSignup = () => {
+    setApplyAfterSignup(true);
+    openModal("signup");
   };
-  const [activeJob, setActiveJob] = useState(null);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    role: "",
-    message: "",
-  });
-  const [feedback, setFeedback] = useState({
-    name: "",
-    email: "",
-    category: "",
-    rating: 0,
-    hoverRating: 0,
-    message: "",
-    submitted: false,
-  });
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All Positions");
-  const [showAll, setShowAll] = useState(false);
-  const JOBS_VISIBLE = 4;
 
-  const filteredJobs = useMemo(() => {
-    return jobs.filter((j) => {
-      const matchesCategory =
-        activeCategory === "All Positions" ||
-        j.category === activeCategory;
-      const matchesSearch =
-        search === "" ||
-        j.title.toLowerCase().includes(search.toLowerCase()) ||
-        j.department.toLowerCase().includes(search.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [search, activeCategory]);
-
-  const visibleJobs = showAll
-    ? filteredJobs
-    : filteredJobs.slice(0, JOBS_VISIBLE);
+  const handleOpenDashboard = () => {
+    setDashboardInitialTab("dashboard");
+    setShowDashboard(true);
+  };
 
   const mergedProfileData = useMemo(() => {
     if (!savedProfileData && !applicationDraft) return null;
@@ -365,13 +99,7 @@ export default function App() {
       >
         <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="flex items-center gap-3.5"
-            >
+            <div className="flex items-center gap-3.5">
               <img
                 src={logoImg}
                 alt="South Point School Logo"
@@ -1130,6 +858,7 @@ export default function App() {
           }}
         />
       )}
+
       {showDashboard && (
         <CandidateDashboard
           onClose={(bypassApplyModal) => {
@@ -1220,7 +949,8 @@ export default function App() {
           onSubmitData={(data) => { setSavedProfileData(data); setShowApply(false); }}
         />
       )}
+
       <Toaster richColors position="top-right" />
-    </div>
+    </>
   );
 }
